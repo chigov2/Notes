@@ -6,16 +6,29 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHolder>{
 
-    private ArrayList<Note> notes;//массив заметок
-    // присваиваем значения переменным в конструкторе
+    private ArrayList<Note> notes;//массив заметок    // присваиваем значения переменным в конструкторе
+
+    private onNoteClickListener onNoteClickListener;
+
+    public void setOnNoteClickListener(NotesAdapter.onNoteClickListener onNoteClickListener) {//setter on onNoteClickListener
+        this.onNoteClickListener = onNoteClickListener;
+    }
+
     public NotesAdapter(ArrayList<Note> notes) {
         this.notes = notes;
+    }
+
+    interface onNoteClickListener {
+        void onNoteClick(int position);//возвращать будет номер позиции нажатия
+        // а определяться будет в анонимном класса в mainactivity
+        void onLongClick(int position);//добавить  в NotesViewHolder
     }
 
     @NonNull
@@ -78,6 +91,24 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
             textViewDescription = itemView.findViewById(R.id.textViewDescription);
             textViewDayOfWeek = itemView.findViewById(R.id.textViewDayOfWeek);
             //textViewPriority = itemView.findViewById(R.id.textViewPriority);
+            itemView.setOnClickListener(new View.OnClickListener(){// и передаем анонимный класс
+                @Override
+                public void onClick(View v) {//onClick вызывается при нажатии на itemView
+                    if (onNoteClickListener != null){//проверка существует ли объект интерфейса onNoteClickListener
+                        onNoteClickListener.onNoteClick(getAdapterPosition());//номер позиции адаптера getAdapterPosition()
+                    }
+                }
+            });// и передаем анонимный класс
+            itemView.setOnLongClickListener(new View.OnLongClickListener(){
+                @Override
+                public boolean onLongClick(View v) {
+                    if (onNoteClickListener != null){//проверка существует ли объект интерфейса onNoteClickListener
+                        onNoteClickListener.onLongClick(getAdapterPosition());//номер позиции адаптера getAdapterPosition()
+                    }
+                    return true;
+                }
+            });
+
         }
     }
 }

@@ -6,6 +6,7 @@ public class Note {
     private String description;
     private String dayOfWeek;
     private int priority;
+
     //add constructor
     public Note(String title, String description, String dayOfWeek, int priority) {
         this.title = title;
@@ -13,6 +14,7 @@ public class Note {
         this.dayOfWeek = dayOfWeek;
         this.priority = priority;
     }
+
     //add getters
     public String getTitle() {
         return title;
@@ -29,6 +31,7 @@ public class Note {
     public int getPriority() {
         return priority;
     }
+}
     //далее создается макет, который будет содержать одну заметку  note_item
     //  у корневого элемента ConstraintLayout высоту по контексту
     // in activity_main.xml добавить recyclerview - прикрепить к экрану
@@ -64,4 +67,12 @@ public class Note {
     // чтобы не нужно было создавать новый объект main активити - меняем его на static
     //выбор дня недели - контейнер спиннер in activity_add_note.xml
     //кнопки выбора приоритета добавляются в радиогруппу
-}
+    // recyclerview adapter не имеет onitemclicklistener - надо создать его самостоятельно -
+    // делаем интерфейс - он будет слушать щелчки по элементам - onNoteClickListener
+    // в адаптере создаем объект слушателя - private onNoteClickListener onNoteClickListener;
+// и добавляем сеттер на него
+//когда кликаем на какуюто заметку - этой заметкой является itemView аргумент конструктора
+// (  public NotesViewHolder(@NonNull View itemView) {  ), а у него можно вызвать setOnclickListener
+//onClick вызывается при нажатии на itemView
+//создаем слушатель в mainactivity
+

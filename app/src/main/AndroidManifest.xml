@@ -12,7 +12,6 @@
         <activity
             android:name=".AddNoteActivity"
             android:exported="true" />
-
         <activity
             android:name=".MainActivity"
             android:exported="true">
