@@ -37,7 +37,24 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
         holder.textViewTitle.setText(note.getTitle());
         holder.textViewDescription.setText(note.getDescription());
         holder.textViewDayOfWeek.setText(note.getDayOfWeek());
-        holder.textViewPriority.setText("" + note.getPriority());/// check test!!!!
+        //holder.textViewPriority.setText("" + note.getPriority());/// check test!!!!
+        int colorId;
+        int priority = note.getPriority();
+        switch(priority){
+            case 1:
+                colorId = holder.itemView.getResources().getColor(android.R.color.holo_red_light);
+                //установка цвета, если находишся не в главной активити
+                break;
+            case 2:
+                colorId = holder.itemView.getResources().getColor(android.R.color.holo_blue_light);
+                break;
+            default:
+                colorId = holder.itemView.getResources().getColor(android.R.color.holo_green_light);
+                break;
+        }
+        //после того, как получили colorId - устанавливаем background
+        holder.textViewTitle.setBackgroundColor(colorId);
+
     }
 
     @Override
@@ -45,11 +62,11 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
         return notes.size();
     }//возвращает количество элементов в массиве
 
-    class NotesViewHolder extends RecyclerView.ViewHolder{
+    class NotesViewHolder extends RecyclerView.ViewHolder{//объект этого класса будет содержать все видимые заметки
         private TextView textViewTitle;
         private TextView textViewDescription;
         private TextView textViewDayOfWeek;
-        private TextView textViewPriority;
+        //private TextView textViewPriority;
 
         //constructor
         public NotesViewHolder(@NonNull View itemView) {
@@ -60,7 +77,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
             textViewTitle = itemView.findViewById(R.id.textViewTitle);
             textViewDescription = itemView.findViewById(R.id.textViewDescription);
             textViewDayOfWeek = itemView.findViewById(R.id.textViewDayOfWeek);
-            textViewPriority = itemView.findViewById(R.id.textViewPriority);
+            //textViewPriority = itemView.findViewById(R.id.textViewPriority);
         }
     }
 }

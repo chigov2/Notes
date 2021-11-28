@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">Notes</string>
+    <string name="label_day_of_week">День недели: </string>
+    <string name="add_note">Add note</string>
+    <string name="none_title">None title</string>
+    <string name="note_description">note description</string>
+    <string name="priority_1">1</string>
+    <string name="priority_2">2</string>
+    <string name="priority_3">3</string>
+
+    <string-array name="days_of_week">
+        <item>Понедельник</item>
+        <item>Вторник</item>
+        <item>Среда</item>
+        <item>Четверг</item>
+        <item>Пятница</item>
+        <item>Суббота</item>
+        <item>Воскресенье</item>
+
+    </string-array>
 </resources>
