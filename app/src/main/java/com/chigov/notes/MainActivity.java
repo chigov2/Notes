@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerViewNotes;
-    public static final ArrayList<Note> notes = new ArrayList<>();// чтобы не нужно было создавать новый объект активити - меняем его на static
+    private final ArrayList<Note> notes = new ArrayList<>();// чтобы не нужно было создавать новый объект активити - меняем его на static
     private NotesAdapter adapter;
     //создание объекта помощника DB
     private NotesDBHelper dbHelper;
@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
         //теперь из хелпера можно получить базу данных
         SQLiteDatabase database = dbHelper.getWritableDatabase();
+        //database.delete(NotesContract.NotesEntry.TABLE_NAME,null,null);
 
         // проверка, чтобы 2 раза не добавлялись элементы
 //        if (notes.isEmpty()){
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 //            database.insert(NotesContract.NotesEntry.TABLE_NAME, null, contentValues);
 //        }
         //необходимо получить данные из базы и записать в arraylist
-        ArrayList<Note> notesFromDB = new ArrayList<>();
+        //ArrayList<Note> notesFromDB = new ArrayList<>();
         //вытащить все данные из базы данных
         Cursor cursor = database.query(NotesContract.NotesEntry.TABLE_NAME,null,null,
                 null,null,null,null);
@@ -73,12 +74,12 @@ public class MainActivity extends AppCompatActivity {
             //можем создавать объект типа Note
             Note note = new Note(title,description,dayOfWeek,priority);
             //и добавляем в созданный массив
-            notesFromDB.add(note);
+            notes.add(note);
         }
         //обязательно закрыть курсор
         cursor.close();
 
-        adapter = new NotesAdapter(notesFromDB);
+        adapter = new NotesAdapter(notes);
         recyclerViewNotes.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         //recyclerViewNotes.setLayoutManager(new GridLayoutManager(this,3));
         recyclerViewNotes.setAdapter(adapter);
