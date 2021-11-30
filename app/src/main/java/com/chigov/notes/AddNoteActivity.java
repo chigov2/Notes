@@ -1,5 +1,6 @@
 package com.chigov.notes;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ContentValues;
@@ -30,6 +31,10 @@ public class AddNoteActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_note);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null){
+            actionBar.hide();
+        }
         dbHelper = new NotesDBHelper(this);
         database = dbHelper.getWritableDatabase();
         editTextTitle = findViewById(R.id.editTextTitle);
@@ -43,7 +48,7 @@ public class AddNoteActivity extends AppCompatActivity {
         //по клику получить знавения всех элементов
         String title = editTextTitle.getText().toString().trim();
         String description = editTextDescription.getText().toString().trim();
-        String dayOfWeek = spinnerDaysOfWeek.getSelectedItem().toString();
+        int dayOfWeek = spinnerDaysOfWeek.getSelectedItemPosition();
         //находим ид, на который нажали
         int radioButtonId = radioGroupPriority.getCheckedRadioButtonId();
         //находим радиобаттон по єтому  ID
@@ -59,7 +64,7 @@ public class AddNoteActivity extends AppCompatActivity {
             ContentValues contentValues = new ContentValues();
             contentValues.put(NotesContract.NotesEntry.COLUMN_TITLE, title);
             contentValues.put(NotesContract.NotesEntry.COLUMN_DESCRIPTION, description);
-            contentValues.put(NotesContract.NotesEntry.COLUMN_DAY_OF_WEEK, dayOfWeek);
+            contentValues.put(NotesContract.NotesEntry.COLUMN_DAY_OF_WEEK, dayOfWeek + 1);
             contentValues.put(NotesContract.NotesEntry.COLUMN_PRIORITY, priority);
             //заносим данные в БД
             database.insert(NotesContract.NotesEntry.TABLE_NAME, null, contentValues);

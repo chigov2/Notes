@@ -1,6 +1,7 @@
 package com.chigov.notes;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -30,6 +31,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null){
+            actionBar.hide();
+        }
         //в списке recyclerView будут храниться заметки - для этого понадобится класс Note
         recyclerViewNotes = findViewById(R.id.recyclerViewNotes);
         dbHelper = new NotesDBHelper(this);
@@ -89,14 +94,16 @@ public class MainActivity extends AppCompatActivity {
     //получать данные из БД и присваивать их масссиву
     private void getData(){
         notes.clear();
-        Cursor cursor = database.query(NotesContract.NotesEntry.TABLE_NAME,null,null,
-                null,null,null, NotesContract.NotesEntry.COLUMN_PRIORITY);
+        String selection = NotesContract.NotesEntry.COLUMN_PRIORITY + "< ?";
+        String[] selectionArgs = new String[]{"3"};
+        Cursor cursor = database.query(NotesContract.NotesEntry.TABLE_NAME,null,selection,
+                selectionArgs,null,null, NotesContract.NotesEntry.COLUMN_PRIORITY);
         //создаем ыикл, чтобы прочитать всю инфо
         while (cursor.moveToNext()){
             @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex(NotesContract.NotesEntry._ID));
             @SuppressLint("Range") String title = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_TITLE));
             @SuppressLint("Range") String description = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_DESCRIPTION));
-            @SuppressLint("Range") String dayOfWeek = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_DAY_OF_WEEK));
+            @SuppressLint("Range") int dayOfWeek = cursor.getInt(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_DAY_OF_WEEK));
             @SuppressLint("Range") int priority = cursor.getInt(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_PRIORITY));
             //можем создавать объект типа Note
             Note note = new Note(id, title,description,dayOfWeek,priority);
@@ -105,12 +112,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     public void onClickAddNote(View view) {
 
         Intent intent = new Intent(this, AddNoteActivity.class);
         startActivity(intent);
         Toast.makeText(this, "Hello", Toast.LENGTH_SHORT).show();
-
     }
 }
