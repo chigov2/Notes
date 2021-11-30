@@ -102,6 +102,8 @@ public class Note {
 // (  public NotesViewHolder(@NonNull View itemView) {  ), а у него можно вызвать setOnclickListener
 //onClick вызывается при нажатии на itemView
 //создаем слушатель в mainactivity
+//10.6 // и присвоим значение в методе onCreate, плзтому поздаем базу данных
+
 
 //10_5_15-51     //создание объекта помощника DB
 // private NotesDBHelper dbHelper;
