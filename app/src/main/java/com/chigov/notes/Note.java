@@ -6,9 +6,12 @@ public class Note {
     private String description;
     private String dayOfWeek;
     private int priority;
+    private int id;
+    //чтобы удалить объект из БД - он должен содержать ID
 
     //add constructor
-    public Note(String title, String description, String dayOfWeek, int priority) {
+    public Note(int id, String title, String description, String dayOfWeek, int priority) {
+        this.id = id;
         this.title = title;
         this.description = description;
         this.dayOfWeek = dayOfWeek;
@@ -16,6 +19,8 @@ public class Note {
     }
 
     //add getters
+    public int getId(){return id;}
+
     public String getTitle() {
         return title;
     }

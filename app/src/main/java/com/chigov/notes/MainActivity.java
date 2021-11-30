@@ -20,10 +20,11 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerViewNotes;
-    public static final ArrayList<Note> notes = new ArrayList<>();// чтобы не нужно было создавать новый объект активити - меняем его на static
+    private final ArrayList<Note> notes = new ArrayList<>();// чтобы не нужно было создавать новый объект активити - меняем его на static
     private NotesAdapter adapter;
     //создание объекта помощника DB
     private NotesDBHelper dbHelper;
+    private SQLiteDatabase database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,51 +35,12 @@ public class MainActivity extends AppCompatActivity {
         dbHelper = new NotesDBHelper(this);
 
         //теперь из хелпера можно получить базу данных
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        database = dbHelper.getWritableDatabase();
+        //database.delete(NotesContract.NotesEntry.TABLE_NAME,null,null);
 
-        // проверка, чтобы 2 раза не добавлялись элементы
-//        if (notes.isEmpty()){
-//        notes.add(new Note("Парикмахер", "Сделать прическу", "Понедельник", 2));
-//        notes.add(new Note("Баскетбол", "Игра со школьной командой", "Вторник", 3));
-//        notes.add(new Note("Магазин", "Купить новые джинсы", "Понедельник", 3));
-//        notes.add(new Note("Стоматолог", "Вылечить зубы", "Понедельник", 2));
-//        notes.add(new Note("Парикмахер", "Сделать прическу к выпускному", "Среда", 1));
-//        notes.add(new Note("Баскетбол", "Игра со школьной командой", "Вторник", 3));
-//        notes.add(new Note("Магазин", "Купить новые джинсы", "Понедельник", 3));
-//        notes.add(new Note("Магазин", "Купить новые футболки", "Среда", 2));
-//        }
-//        // взять инфо из notes и в цикле записать в базу данных
-//        for (Note note : notes){
-//            ContentValues contentValues = new ContentValues();
-//            //вставить заголовок заметки
-//            contentValues.put(NotesContract.NotesEntry.COLUMN_TITLE,note.getTitle());
-//            contentValues.put(NotesContract.NotesEntry.COLUMN_DESCRIPTION,note.getDescription());
-//            contentValues.put(NotesContract.NotesEntry.COLUMN_DAY_OF_WEEK,note.getDayOfWeek());
-//            contentValues.put(NotesContract.NotesEntry.COLUMN_PRIORITY,note.getPriority());
-//            //теперь объект contentValues необходимо вставить в базу данных
-//            database.insert(NotesContract.NotesEntry.TABLE_NAME, null, contentValues);
-//        }
-        //необходимо получить данные из базы и записать в arraylist
-        ArrayList<Note> notesFromDB = new ArrayList<>();
-        //вытащить все данные из базы данных
-        Cursor cursor = database.query(NotesContract.NotesEntry.TABLE_NAME,null,null,
-                null,null,null,null);
+        getData();
 
-        //создаем ыикл, чтобы прочитать всю инфо
-        while (cursor.moveToNext()){
-            @SuppressLint("Range") String title = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_TITLE));
-            @SuppressLint("Range") String description = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_DESCRIPTION));
-            @SuppressLint("Range") String dayOfWeek = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_DAY_OF_WEEK));
-            @SuppressLint("Range") int priority = cursor.getInt(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_PRIORITY));
-            //можем создавать объект типа Note
-            Note note = new Note(title,description,dayOfWeek,priority);
-            //и добавляем в созданный массив
-            notesFromDB.add(note);
-        }
-        //обязательно закрыть курсор
-        cursor.close();
-
-        adapter = new NotesAdapter(notesFromDB);
+        adapter = new NotesAdapter(notes);
         recyclerViewNotes.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         //recyclerViewNotes.setLayoutManager(new GridLayoutManager(this,3));
         recyclerViewNotes.setAdapter(adapter);
@@ -112,9 +74,37 @@ public class MainActivity extends AppCompatActivity {
 
     }
     public void remove(int position){
-        notes.remove(position);// после удаления... надо обновить
+        //при удалении надо получить ID
+        int id = notes.get(position).getId();
+        //для удаления передать ид и что удалять
+        String where = NotesContract.NotesEntry._ID + " = ?";
+        String[] whereArgs = new String[]{Integer.toString(id)};
+        database.delete(NotesContract.NotesEntry.TABLE_NAME,where,whereArgs);
+        getData();
+        //notes.remove(position);// после удаления... надо обновить
         adapter.notifyDataSetChanged();
+
     }
+
+    //получать данные из БД и присваивать их масссиву
+    private void getData(){
+        notes.clear();
+        Cursor cursor = database.query(NotesContract.NotesEntry.TABLE_NAME,null,null,
+                null,null,null, NotesContract.NotesEntry.COLUMN_PRIORITY);
+        //создаем ыикл, чтобы прочитать всю инфо
+        while (cursor.moveToNext()){
+            @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex(NotesContract.NotesEntry._ID));
+            @SuppressLint("Range") String title = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_TITLE));
+            @SuppressLint("Range") String description = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_DESCRIPTION));
+            @SuppressLint("Range") String dayOfWeek = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_DAY_OF_WEEK));
+            @SuppressLint("Range") int priority = cursor.getInt(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_PRIORITY));
+            //можем создавать объект типа Note
+            Note note = new Note(id, title,description,dayOfWeek,priority);
+            //и добавляем в созданный массив
+            notes.add(note);
+        }
+    }
+
 
     public void onClickAddNote(View view) {
 
