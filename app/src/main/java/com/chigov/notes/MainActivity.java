@@ -23,9 +23,6 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerViewNotes;
     private final ArrayList<Note> notes = new ArrayList<>();// чтобы не нужно было создавать новый объект активити - меняем его на static
     private NotesAdapter adapter;
-    //создание объекта помощника DB
-    private NotesDBHelper dbHelper;
-    private SQLiteDatabase database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,13 +34,6 @@ public class MainActivity extends AppCompatActivity {
         }
         //в списке recyclerView будут храниться заметки - для этого понадобится класс Note
         recyclerViewNotes = findViewById(R.id.recyclerViewNotes);
-        dbHelper = new NotesDBHelper(this);
-
-        //теперь из хелпера можно получить базу данных
-        database = dbHelper.getWritableDatabase();
-        //database.delete(NotesContract.NotesEntry.TABLE_NAME,null,null);
-
-        getData();
 
         adapter = new NotesAdapter(notes);
         recyclerViewNotes.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -81,35 +71,9 @@ public class MainActivity extends AppCompatActivity {
     public void remove(int position){
         //при удалении надо получить ID
         int id = notes.get(position).getId();
-        //для удаления передать ид и что удалять
-        String where = NotesContract.NotesEntry._ID + " = ?";
-        String[] whereArgs = new String[]{Integer.toString(id)};
-        database.delete(NotesContract.NotesEntry.TABLE_NAME,where,whereArgs);
-        getData();
         //notes.remove(position);// после удаления... надо обновить
         adapter.notifyDataSetChanged();
 
-    }
-
-    //получать данные из БД и присваивать их масссиву
-    private void getData(){
-        notes.clear();
-        String selection = NotesContract.NotesEntry.COLUMN_PRIORITY + "< ?";
-        String[] selectionArgs = new String[]{"3"};
-        Cursor cursor = database.query(NotesContract.NotesEntry.TABLE_NAME,null,selection,
-                selectionArgs,null,null, NotesContract.NotesEntry.COLUMN_PRIORITY);
-        //создаем ыикл, чтобы прочитать всю инфо
-        while (cursor.moveToNext()){
-            @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex(NotesContract.NotesEntry._ID));
-            @SuppressLint("Range") String title = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_TITLE));
-            @SuppressLint("Range") String description = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_DESCRIPTION));
-            @SuppressLint("Range") int dayOfWeek = cursor.getInt(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_DAY_OF_WEEK));
-            @SuppressLint("Range") int priority = cursor.getInt(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_PRIORITY));
-            //можем создавать объект типа Note
-            Note note = new Note(id, title,description,dayOfWeek,priority);
-            //и добавляем в созданный массив
-            notes.add(note);
-        }
     }
 
     public void onClickAddNote(View view) {

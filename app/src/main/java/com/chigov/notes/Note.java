@@ -1,13 +1,27 @@
 package com.chigov.notes;
 
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "notes")
 public class Note {
+    @PrimaryKey(autoGenerate = true)
     //заметка будет содержать название...
+    private int id;
     private String title;
     private String description;
     private int dayOfWeek;
     private int priority;
-    private int id;
     //чтобы удалить объект из БД - он должен содержать ID
+
+    @Ignore
+    public Note(String title, String description, int dayOfWeek, int priority) {
+        this.title = title;
+        this.description = description;
+        this.dayOfWeek = dayOfWeek;
+        this.priority = priority;
+    }
 
     //add constructor
     public Note(int id, String title, String description, int dayOfWeek, int priority) {
@@ -15,6 +29,26 @@ public class Note {
         this.title = title;
         this.description = description;
         this.dayOfWeek = dayOfWeek;
+        this.priority = priority;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setDayOfWeek(int dayOfWeek) {
+        this.dayOfWeek = dayOfWeek;
+    }
+
+    public void setPriority(int priority) {
         this.priority = priority;
     }
 

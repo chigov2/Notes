@@ -20,13 +20,6 @@ public class AddNoteActivity extends AppCompatActivity {
     private Spinner spinnerDaysOfWeek;
     private RadioGroup radioGroupPriority;
 
-    //пустая база уже
-    //helper link
-    private NotesDBHelper dbHelper;
-    //create DB
-    private SQLiteDatabase database;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,8 +28,6 @@ public class AddNoteActivity extends AppCompatActivity {
         if(actionBar != null){
             actionBar.hide();
         }
-        dbHelper = new NotesDBHelper(this);
-        database = dbHelper.getWritableDatabase();
         editTextTitle = findViewById(R.id.editTextTitle);
         editTextDescription = findViewById(R.id.editTextDescription);
         spinnerDaysOfWeek = findViewById(R.id.spinnerDaysOfWeek);
@@ -66,8 +57,6 @@ public class AddNoteActivity extends AppCompatActivity {
             contentValues.put(NotesContract.NotesEntry.COLUMN_DESCRIPTION, description);
             contentValues.put(NotesContract.NotesEntry.COLUMN_DAY_OF_WEEK, dayOfWeek + 1);
             contentValues.put(NotesContract.NotesEntry.COLUMN_PRIORITY, priority);
-            //заносим данные в БД
-            database.insert(NotesContract.NotesEntry.TABLE_NAME, null, contentValues);
             //запустить MainActivity
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
