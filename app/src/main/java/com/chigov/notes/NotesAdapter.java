@@ -42,14 +42,14 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
     }
 
     @Override
-    public void onBindViewHolder(@NonNull NotesViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull NotesViewHolder holder, int position ) {
         //в адаптере нет массивов - надо создать -private ArrayList<Note> notes;
         // и дать значения массивов в конструкторе Alt +Ins
         //заполнение массива
         Note note = notes.get(position);//позиция в массиве
         holder.textViewTitle.setText(note.getTitle());
         holder.textViewDescription.setText(note.getDescription());
-        holder.textViewDayOfWeek.setText(Note.getDayAsString(position));
+        holder.textViewDayOfWeek.setText(Note.getDayAsString(position + 1));
         //holder.textViewDayOfWeek.setText(note.getDayOfWeek());
         //holder.textViewPriority.setText("" + note.getPriority());/// check test!!!!
         int colorId;
@@ -60,7 +60,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
                 //установка цвета, если находишся не в главной активити
                 break;
             case 2:
-                colorId = holder.itemView.getResources().getColor(android.R.color.holo_blue_light);
+                colorId = holder.itemView.getResources().getColor(android.R.color.holo_orange_light);
                 break;
             default:
                 colorId = holder.itemView.getResources().getColor(android.R.color.holo_green_light);

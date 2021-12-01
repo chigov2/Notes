@@ -20,10 +20,14 @@ public class AddNoteActivity extends AppCompatActivity {
     private Spinner spinnerDaysOfWeek;
     private RadioGroup radioGroupPriority;
 
+    //получение объекта базы данных
+    private NotesDatabase database;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_note);
+        database = NotesDatabase.getInstance(this);
         ActionBar actionBar = getSupportActionBar();
         if(actionBar != null){
             actionBar.hide();
@@ -46,26 +50,14 @@ public class AddNoteActivity extends AppCompatActivity {
         RadioButton radioButton = findViewById(radioButtonId);////               !!!!!!!!!
         //текст надо привести к int
         int priority = Integer.parseInt(radioButton.getText().toString());
-
-        //проверка все ли поля заполнены
-        if (isFilled(title, description)) {
-            //из полученных данных создаем заметку
-            //Note note = new Note(title,description,dayOfWeek,priority);
-            //добавить эту заметку к списку заметок
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(NotesContract.NotesEntry.COLUMN_TITLE, title);
-            contentValues.put(NotesContract.NotesEntry.COLUMN_DESCRIPTION, description);
-            contentValues.put(NotesContract.NotesEntry.COLUMN_DAY_OF_WEEK, dayOfWeek + 1);
-            contentValues.put(NotesContract.NotesEntry.COLUMN_PRIORITY, priority);
-            //запустить MainActivity
-            Intent intent = new Intent(this, MainActivity.class);
+        if (isFilled(title,description)){
+            Note note = new Note(title,description,dayOfWeek,priority);
+            database.notesDao().insertNote(note);
+            Intent intent = new Intent(this,MainActivity.class);
             startActivity(intent);
-            //новые элементы добавляются  - надо сделать проверку
-            // перед тем как заносить данные в базу - проверить заполнены ли все поля
-        } else {
+        }else{
             Toast.makeText(this, R.string.warning_field, Toast.LENGTH_SHORT).show();
         }
-
 
     }
 

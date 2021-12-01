@@ -18,22 +18,29 @@ import android.view.View;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerViewNotes;
     private final ArrayList<Note> notes = new ArrayList<>();// чтобы не нужно было создавать новый объект активити - меняем его на static
     private NotesAdapter adapter;
+    private NotesDatabase database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //база данных получена
+        database = NotesDatabase.getInstance(this);
         ActionBar actionBar = getSupportActionBar();
         if(actionBar != null){
             actionBar.hide();
         }
         //в списке recyclerView будут храниться заметки - для этого понадобится класс Note
         recyclerViewNotes = findViewById(R.id.recyclerViewNotes);
+
+        //получаем данные
+        getData();
 
         adapter = new NotesAdapter(notes);
         recyclerViewNotes.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -69,9 +76,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
     public void remove(int position){
-        //при удалении надо получить ID
-        int id = notes.get(position).getId();
-        //notes.remove(position);// после удаления... надо обновить
+        //при удалении получаем экземпляр записки
+        Note note = notes.get(position);
+        //удаляем записку из БД
+        database.notesDao().deleteNote(note);
+        getData();
+        //после этого получаем данные
         adapter.notifyDataSetChanged();
 
     }
@@ -81,5 +91,12 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, AddNoteActivity.class);
         startActivity(intent);
         Toast.makeText(this, "Hello", Toast.LENGTH_SHORT).show();
+    }
+    private void getData(){
+        //будем получать значения в виде ArrayList<Note>
+        //получмли все заметки
+        List<Note> notesFromDB = database.notesDao().getAllNotes();
+        notes.clear();
+        notes.addAll(notesFromDB);
     }
 }
