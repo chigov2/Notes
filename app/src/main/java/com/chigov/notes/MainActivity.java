@@ -3,6 +3,8 @@ package com.chigov.notes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -75,15 +77,12 @@ public class MainActivity extends AppCompatActivity {
         itemTouchHelper.attachToRecyclerView(recyclerViewNotes);
 
     }
+    @SuppressLint("NotifyDataSetChanged")
     public void remove(int position){
         //при удалении получаем экземпляр записки
         Note note = notes.get(position);
         //удаляем записку из БД
         database.notesDao().deleteNote(note);
-        getData();
-        //после этого получаем данные
-        adapter.notifyDataSetChanged();
-
     }
 
     public void onClickAddNote(View view) {
@@ -95,8 +94,16 @@ public class MainActivity extends AppCompatActivity {
     private void getData(){
         //будем получать значения в виде ArrayList<Note>
         //получмли все заметки
-        List<Note> notesFromDB = database.notesDao().getAllNotes();
-        notes.clear();
-        notes.addAll(notesFromDB);
+        LiveData<List<Note>> notesFromDB = database.notesDao().getAllNotes();
+        //чтобы использовать полученные изменения
+        notesFromDB.observe(this, new Observer<List<Note>>() {
+            @Override
+            public void onChanged(List<Note> notesFromLiveData) {
+                notes.clear();
+                notes.addAll(notesFromLiveData);
+                adapter.notifyDataSetChanged();
+            }
+        });
+
     }
 }
