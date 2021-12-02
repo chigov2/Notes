@@ -5,6 +5,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,14 +27,14 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerViewNotes;
     private final ArrayList<Note> notes = new ArrayList<>();// чтобы не нужно было создавать новый объект активити - меняем его на static
     private NotesAdapter adapter;
-    private NotesDatabase database;
+    private MainViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //база данных получена
-        database = NotesDatabase.getInstance(this);
+        viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
         ActionBar actionBar = getSupportActionBar();
         if(actionBar != null){
             actionBar.hide();
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         //при удалении получаем экземпляр записки
         Note note = notes.get(position);
         //удаляем записку из БД
-        database.notesDao().deleteNote(note);
+        viewModel.deleteNote(note);
     }
 
     public void onClickAddNote(View view) {
@@ -94,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
     private void getData(){
         //будем получать значения в виде ArrayList<Note>
         //получмли все заметки
-        LiveData<List<Note>> notesFromDB = database.notesDao().getAllNotes();
+        LiveData<List<Note>> notesFromDB = viewModel.getNotes();
         //чтобы использовать полученные изменения
         notesFromDB.observe(this, new Observer<List<Note>>() {
             @Override

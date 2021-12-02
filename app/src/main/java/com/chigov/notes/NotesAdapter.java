@@ -109,7 +109,6 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
                     return true;
                 }
             });
-
         }
     }
 }
