@@ -19,6 +19,6 @@ public class MainViewModel extends AndroidViewModel {
     public MainViewModel(@NonNull Application application) {
         super(application);
         database = NotesDatabase.getInstance(getApplication());
-        notes =
+       //5
     }
 }
