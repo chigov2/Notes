@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("NotifyDataSetChanged")
     public void remove(int position){
         //при удалении получаем экземпляр записки
-        Note note = notes.get(position);
+        Note note = adapter.getNotes().get(position);
         //удаляем записку из БД
         viewModel.deleteNote(note);
     }
@@ -100,9 +100,10 @@ public class MainActivity extends AppCompatActivity {
         notesFromDB.observe(this, new Observer<List<Note>>() {
             @Override
             public void onChanged(List<Note> notesFromLiveData) {
-                notes.clear();
-                notes.addAll(notesFromLiveData);
-                adapter.notifyDataSetChanged();
+                //notes.clear();
+                //notes.addAll(notesFromLiveData);
+                //adapter.notifyDataSetChanged();
+                adapter.setNotes(notesFromLiveData);
             }
         });
 
