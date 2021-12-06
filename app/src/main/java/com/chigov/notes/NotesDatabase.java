@@ -28,5 +28,4 @@ public abstract class NotesDatabase extends RoomDatabase {
     }
     //получить объект интерфейса NotesDao notesDao()
     public abstract NotesDao notesDao();
-
 }
